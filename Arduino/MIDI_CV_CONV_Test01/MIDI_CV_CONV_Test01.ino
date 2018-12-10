@@ -1,11 +1,19 @@
+/*
+ *  MIDI_CV_CONV_Test01
+ *  
+ *  GATE x 6 ch
+ *  
+ *  2018.12.10
+ */
+ 
 #include <Wire.h>
 #include <I2CLiquidCrystal.h>
 #include <MIDI.h>
 
-#define LCD_TRACE   (1)
+#define LCD_TRACE   (0)
 #define PIN_CHECK   (1)
-#define TITLE_STR1  ("MIDI to GATE    ")
-#define TITLE_STR2  ("20181204        ")
+#define TITLE_STR1  ("MIDI_CV Test 01 ")
+#define TITLE_STR2  ("20181210        ")
 
 // Pin assign
 const int GateOutPin1 = 2;
@@ -45,18 +53,38 @@ void printNoteOnOff(const char* type, byte inChannel, byte inNote, byte inVeloci
 
 void handleNoteOn(byte inChannel, byte inNote, byte inVelocity)
 {
-  digitalWrite(GateOutPin1, HIGH);
 #if (LCD_TRACE)
   printNoteOnOff("On", inChannel, inNote, inVelocity);
 #endif
+
+  switch (inChannel) {
+  case 1:
+    digitalWrite(GateOutPin1, HIGH);
+    break;
+  case 2:  digitalWrite(GateOutPin2, HIGH);  break;
+  case 3:  digitalWrite(GateOutPin3, HIGH);  break;
+  case 4:  digitalWrite(GateOutPin4, HIGH);  break;
+  case 5:  digitalWrite(GateOutPin5, HIGH);  break;
+  case 6:  digitalWrite(GateOutPin6, HIGH);  break;
+  }
 }
 
 void handleNoteOff(byte inChannel, byte inNote, byte inVelocity)
 {
-  digitalWrite(GateOutPin1, LOW);
 #if (LCD_TRACE)
   printNoteOnOff("Off", inChannel, inNote, inVelocity);
 #endif
+
+  switch (inChannel) {
+  case 1:
+    digitalWrite(GateOutPin1, LOW);
+    break;
+  case 2:  digitalWrite(GateOutPin2, LOW);  break;
+  case 3:  digitalWrite(GateOutPin3, LOW);  break;
+  case 4:  digitalWrite(GateOutPin4, LOW);  break;
+  case 5:  digitalWrite(GateOutPin5, LOW);  break;
+  case 6:  digitalWrite(GateOutPin6, LOW);  break;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -91,15 +119,13 @@ void loop()
 #endif
 
   if (MIDI.read()) {
-
-    // Display Raw Midi Message
-
     byte type    = MIDI.getType();
     byte channel = MIDI.getChannel();
     byte data1   = MIDI.getData1();
     byte data2   = MIDI.getData2();
 
 #if (LCD_TRACE)
+    // Display Raw Midi Message
     lcd.setCursor(0, 0);
     lcd.print("                ");
     lcd.setCursor(0, 0);
