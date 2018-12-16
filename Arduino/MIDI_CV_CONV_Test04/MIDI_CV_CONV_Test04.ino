@@ -1,9 +1,10 @@
 /*
- *  MIDI_CV_CONV_Test03
+ *  MIDI_CV_CONV_Test04
  *  
  *  Test01: GATE x 6 ch
  *  Test02: 同期してGATEを出力
  *  Test03: CV x 2ch (dummy)
+ *  Test04: CV: ch1:Freq ch:Mod
  *  
  *  2018.12.10
  */
@@ -14,10 +15,10 @@
 #include <I2CLiquidCrystal.h>
 #include "noteToBit.h"
 
-#define LCD_TRACE   (0)
+#define LCD_TRACE   (0)  // LCD_TRACEを有効化(1)すると正常動作しない。
 #define PIN_CHECK   (1)
 #define TITLE_STR1  ("MIDI_CV Test 04 ")
-#define TITLE_STR2  ("20181212        ")
+#define TITLE_STR2  ("20181216        ")
 
 // Pin assign
 const int GateOutPin1 = 2;
@@ -71,8 +72,8 @@ void handleNoteOn(byte inChannel, byte inNote, byte inVelocity)
 #endif
 
   // cv
-  if (inChannel < 2) {
-    cv[inChannel - 1] = inNote;
+  if (inChannel == 1) {
+    cv[0] = inNote;
   }
 
   // gate
@@ -104,24 +105,24 @@ void MCP4922Write(bool channel, uint16_t val)
   uint16_t cmd = channel << 15 | 0x3000;
   cmd |= (val & 0x0fff);
 
-  digitalWrite(MCP4922Ldac, HIGH);
+  //digitalWrite(MCP4922Ldac, HIGH);
   digitalWrite(MCP4922Cs, LOW);
   SPI.transfer(highByte(cmd));
   SPI.transfer(lowByte(cmd));
   digitalWrite(MCP4922Cs, HIGH);
-  digitalWrite(MCP4922Ldac, LOW);
+  //digitalWrite(MCP4922Ldac, LOW);
 }
 
 void cvWrite()
 {
+  // CV0
   if (cv[0] >= 24 && cv[0] <= 88) {
     uint16_t v0 = noteToBit[cv[0] - 24];
     MCP4922Write(0, v0); 
   }
 
-  static uint16_t v1 = 0;
-  MCP4922Write(1, (v1 & 0x0FFF));
-  v1++;
+  // CV1
+  MCP4922Write(1, cv[1] << 5);
 }
 
 void gateWrite()
@@ -172,23 +173,32 @@ void loop()
     byte data1   = MIDI.getData1();
     byte data2   = MIDI.getData2();
 
+    // CC:Modulation Ch:1
+    if (type == 0xB0 && channel == 1 && data1 == 0x01) {
+      cv[1] = data2;
+    }
+
 #if (LCD_TRACE)
     // Display Raw Midi Message
-    lcd.setCursor(0, 0);
-    lcd.print("                ");
-    lcd.setCursor(0, 0);
-    lcd.print(type, HEX);
-    lcd.print(' ');
-    lcd.print(channel, HEX);
-    lcd.print(' ');
-    lcd.print(data1, HEX);
-    lcd.print(' ');
-    lcd.print(data2, HEX);
+    if (type != 0x80 && type != 0x90) {
+      lcd.setCursor(0, 0);
+      lcd.print("                ");
+      lcd.setCursor(0, 0);
+      lcd.print(type, HEX);
+      lcd.print(' ');
+      lcd.print(channel, HEX);
+      lcd.print(' ');
+      lcd.print(data1, HEX);
+      lcd.print(' ');
+      lcd.print(data2, HEX);
+    }
 #endif
   }
 
-  gateWrite();
+  digitalWrite(MCP4922Ldac, HIGH);
   cvWrite();
+  gateWrite();
+  digitalWrite(MCP4922Ldac, LOW);
 
 #if (PIN_CHECK)
   digitalWrite(CheckPin1, LOW);
