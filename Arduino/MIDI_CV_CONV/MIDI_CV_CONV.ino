@@ -43,7 +43,7 @@ I2CLiquidCrystal lcd(63, (bool)true);
 volatile uint8_t cv[2];
 volatile uint8_t gateBits;
 
-// MIDI Input -------------------------------------------------------------------------
+// MIDI Input Callbacks ------------------------------------------------------------
 
 #if (LCD_TRACE)
 void printNoteOnOff(const char* type, byte inChannel, byte inNote, byte inVelocity)
@@ -87,6 +87,14 @@ void handleNoteOff(byte inChannel, byte inNote, byte inVelocity)
   // gate
   if (inChannel <= 6) {
     bitClear(gateBits, (inChannel + 1));
+  }
+}
+
+void handleControlChange(byte channel, byte number, byte value)
+{
+  // CC:Modulation Ch:1
+  if (channel == 1 && number == 0x01) {
+    cv[1] = value;
   }
 }
 
@@ -147,6 +155,7 @@ void setup()
 
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
+  MIDI.setHandleControlChange(handleControlChange);
   MIDI.begin(MIDI_CHANNEL_OMNI);
 
 #if (LCD_TRACE)
@@ -165,17 +174,12 @@ void loop()
 #endif
 
   if (MIDI.read()) {
+#if (LCD_TRACE)
     byte type    = MIDI.getType();
     byte channel = MIDI.getChannel();
     byte data1   = MIDI.getData1();
     byte data2   = MIDI.getData2();
 
-    // CC:Modulation Ch:1
-    if (type == 0xB0 && channel == 1 && data1 == 0x01) {
-      cv[1] = data2;
-    }
-
-#if (LCD_TRACE)
     // Display Raw Midi Message
     if (type != 0x80 && type != 0x90) {
       lcd.setCursor(0, 0);
