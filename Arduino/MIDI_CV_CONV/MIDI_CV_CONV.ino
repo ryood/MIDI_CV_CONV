@@ -40,8 +40,9 @@ SPISettings MCP4922_SPISetting(8000000, MSBFIRST, SPI_MODE0);
 I2CLiquidCrystal lcd(63, (bool)true);
 #endif
 
-volatile uint8_t cv[2];
-volatile uint8_t gateBits;
+volatile uint8_t cv[2] = {0, 0};
+volatile uint8_t gateBits = 0;
+volatile int16_t bend = 0;
 
 // MIDI Input Callbacks ------------------------------------------------------------
 
@@ -90,6 +91,13 @@ void handleNoteOff(byte inChannel, byte inNote, byte inVelocity)
   }
 }
 
+void handlePitchBend(byte channel, int _bend)
+{
+  if (channel == 1) {
+    bend = _bend;
+  }
+}
+
 void handleControlChange(byte channel, byte number, byte value)
 {
   // CC:Modulation Ch:1
@@ -121,8 +129,15 @@ void cvWrite()
 {
   // CV0
   if (cv[0] >= 33 && cv[0] <= 72) {
-    float ov = (cv[0] - 33) / 12.0f;
+    float fbend = (bend / 8192.0f) * 2.0f;
+    float ov = ((cv[0] - 33) + fbend) / 12.0f;
+    if (ov < 0.0f) {
+      ov = 0.0f;
+    }
     uint16_t v0 = 4096 * (ov / DAC_VREF);
+    if (v0 > 4095) {
+      v0 = 4095;
+    }
     MCP4922Write(0, v0); 
   }
 
@@ -155,6 +170,7 @@ void setup()
 
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
+  MIDI.setHandlePitchBend(handlePitchBend);
   MIDI.setHandleControlChange(handleControlChange);
   MIDI.begin(MIDI_CHANNEL_OMNI);
 
