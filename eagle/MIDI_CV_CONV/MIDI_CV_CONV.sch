@@ -22954,6 +22954,9 @@ DIN A4, landscape with location and doc. field</description>
 <part name="FRAME1" library="frames" library_urn="urn:adsk.eagle:library:229" deviceset="A4L-LOC" device="" value="Frame"/>
 <part name="JP8" library="pinhead" library_urn="urn:adsk.eagle:library:325" deviceset="PINHD-1X2" device="" package3d_urn="urn:adsk.eagle:package:22435/2" value="PGM_SW"/>
 <part name="JP6" library="pinhead" library_urn="urn:adsk.eagle:library:325" deviceset="PINHD-1X1" device="" package3d_urn="urn:adsk.eagle:package:22485/2" value="TP_CHK"/>
+<part name="CN2" library="jst-xh" deviceset="B2B-XH-A" device="" value="PWR5V"/>
+<part name="P+10" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+5V" device=""/>
+<part name="GND14" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -23024,11 +23027,14 @@ P5</text>
 <instance part="LED6" gate="G$1" x="17.78" y="22.86" rot="R90"/>
 <instance part="GND12" gate="1" x="83.82" y="35.56"/>
 <instance part="P+9" gate="1" x="12.7" y="71.12"/>
-<instance part="JP7" gate="G$1" x="137.16" y="147.32" rot="MR0"/>
-<instance part="GND13" gate="1" x="144.78" y="139.7"/>
+<instance part="JP7" gate="G$1" x="160.02" y="147.32" rot="MR0"/>
+<instance part="GND13" gate="1" x="167.64" y="139.7"/>
 <instance part="FRAME1" gate="G$1" x="0" y="0"/>
 <instance part="JP8" gate="G$1" x="93.98" y="124.46"/>
 <instance part="JP6" gate="G$1" x="109.22" y="48.26"/>
+<instance part="CN2" gate="G$1" x="134.62" y="149.86" rot="MR0"/>
+<instance part="P+10" gate="1" x="139.7" y="157.48" rot="MR0"/>
+<instance part="GND14" gate="1" x="139.7" y="139.7"/>
 </instances>
 <busses>
 <bus name="GATE[0..5]">
@@ -23124,6 +23130,12 @@ P5</text>
 <pinref part="P+9" gate="1" pin="+5V"/>
 <wire x1="12.7" y1="68.58" x2="12.7" y2="60.96" width="0.1524" layer="91"/>
 <junction x="12.7" y="60.96"/>
+</segment>
+<segment>
+<pinref part="CN2" gate="G$1" pin="1"/>
+<wire x1="134.62" y1="149.86" x2="139.7" y2="149.86" width="0.1524" layer="91"/>
+<pinref part="P+10" gate="1" pin="+5V"/>
+<wire x1="139.7" y1="149.86" x2="139.7" y2="154.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$4" class="0">
@@ -23251,13 +23263,13 @@ P5</text>
 </segment>
 <segment>
 <pinref part="GND13" gate="1" pin="GND"/>
-<wire x1="144.78" y1="142.24" x2="144.78" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="167.64" y1="142.24" x2="167.64" y2="147.32" width="0.1524" layer="91"/>
 <pinref part="JP7" gate="G$1" pin="1"/>
-<wire x1="144.78" y1="147.32" x2="144.78" y2="149.86" width="0.1524" layer="91"/>
-<wire x1="144.78" y1="149.86" x2="139.7" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="167.64" y1="147.32" x2="167.64" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="167.64" y1="149.86" x2="162.56" y2="149.86" width="0.1524" layer="91"/>
 <pinref part="JP7" gate="G$1" pin="2"/>
-<wire x1="139.7" y1="147.32" x2="144.78" y2="147.32" width="0.1524" layer="91"/>
-<junction x="144.78" y="147.32"/>
+<wire x1="162.56" y1="147.32" x2="167.64" y2="147.32" width="0.1524" layer="91"/>
+<junction x="167.64" y="147.32"/>
 </segment>
 <segment>
 <pinref part="IC4" gate="A" pin="I7"/>
@@ -23268,6 +23280,12 @@ P5</text>
 <wire x1="83.82" y1="43.18" x2="83.82" y2="38.1" width="0.1524" layer="91"/>
 <wire x1="81.28" y1="43.18" x2="83.82" y2="43.18" width="0.1524" layer="91"/>
 <junction x="83.82" y="43.18"/>
+</segment>
+<segment>
+<pinref part="CN2" gate="G$1" pin="2"/>
+<wire x1="134.62" y1="147.32" x2="139.7" y2="147.32" width="0.1524" layer="91"/>
+<pinref part="GND14" gate="1" pin="GND"/>
+<wire x1="139.7" y1="147.32" x2="139.7" y2="142.24" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$5" class="0">
