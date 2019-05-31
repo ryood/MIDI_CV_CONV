@@ -9,10 +9,11 @@
 #include <MIDI.h>
 #include <I2CLiquidCrystal.h>
 
-#define LCD_TRACE   (1)  // LCD_TRACEを有効化(1)すると正常動作しない。
+#define LED_CHECK   (1)
+#define LCD_TRACE   (0)  // LCD_TRACEを有効化(1)すると正常動作しない。
 #define PIN_CHECK   (1)
 #define TITLE_STR1  ("MIDI_CV_CONV    ")
-#define TITLE_STR2  ("20190307        ")
+#define TITLE_STR2  ("20190531        ")
 
 #define DAC_VREF  (3.3f)
 
@@ -152,6 +153,22 @@ void gateWrite()
 
 // -----------------------------------------------------------------------------
 
+#if (LED_CHECK) 
+void ledCheck()
+{
+  for (int j = 0; j < 2; j++) {
+    gateBits = 1;
+    for (int i = 0; i < 7; i++) {
+      gateBits = gateBits << 1;
+      PORTD = gateBits;
+      delay(100);
+    }
+  }
+  gateBits = 0;
+  PORTD = gateBits;
+}
+#endif
+
 void setup()
 {
   pinMode(GateOutPin1, OUTPUT);
@@ -161,6 +178,10 @@ void setup()
   pinMode(GateOutPin5, OUTPUT);
   pinMode(GateOutPin6, OUTPUT);
   pinMode(CheckPin1,   OUTPUT);
+
+#if (LED_CHECK)
+  ledCheck();
+#endif
 
   pinMode(MCP4922Cs, OUTPUT);
   digitalWrite(MCP4922Cs, HIGH);  // set CS as inactive
