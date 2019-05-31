@@ -9,7 +9,7 @@
 #include <MIDI.h>
 #include <I2CLiquidCrystal.h>
 
-#define LCD_TRACE   (0)  // LCD_TRACEを有効化(1)すると正常動作しない。
+#define LCD_TRACE   (1)  // LCD_TRACEを有効化(1)すると正常動作しない。
 #define PIN_CHECK   (1)
 #define TITLE_STR1  ("MIDI_CV_CONV    ")
 #define TITLE_STR2  ("20190307        ")
